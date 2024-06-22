@@ -1,12 +1,6 @@
 <div align="center">
-  <img src="https://www.flaticon.com/free-icon/physics_753244" width="100px"/>
+  <img src="![image](https://github.com/farhanizza/application-financial-management/assets/56186641/129f1f89-2487-4fdc-8fa6-11fcca08567b)" width="100px"/>
   <h1 align="center">Application Financial Management</h1>
-
-  <p align="center">
-    <a href="https://skillicons.dev">
-      <img src="https://skillicons.dev/icons?i=kotlin,androidstudio" />
-    </a>
-  </p>
 
 Application Financial Management is a comprehensive solution for managing personal finances. With easy-to-use features and in-depth financial analysis, we help you stay on the right path to financial stability.
 
@@ -20,7 +14,7 @@ Application Financial Management is a comprehensive solution for managing person
 ## Tech Stack
 - [Javascript] - Language
 - [DaisyUI] - UI Toolkit
-- [React JS](https://dagger.dev/hilt/) - Framework
+- [React JS] - Framework
 
 ## Get Started
 ### 1. Clone the repository
