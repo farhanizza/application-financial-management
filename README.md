@@ -24,7 +24,12 @@ git clone https://github.com/farhanizza/application-financial-management.git
 cd application-financial-management
 ```
 
-### 2. Run the program
+### 2. Install Package
+```shell
+npm i
+```
+
+### 3. Run the program
 Run the program 
 ```shell
 npm start
