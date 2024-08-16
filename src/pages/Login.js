@@ -1,15 +1,35 @@
 import React, { useState } from 'react';
 import auth_page from '../assets/image/auth_page.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import bcryptjs from 'bcryptjs';
 
 export default function Login() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+	const [error, seterror] = useState(false);
+	const navigate = useNavigate();
 
-	const sendData = (e) => {
+	const sendData = async (e) => {
 		// Send to backend
-		console.log(username);
-		console.log(password);
+		const response = await axios.get('http://localhost:3001/users');
+
+		const users = response.data;
+
+		const login = users.find((data) => data.username === username);
+
+		if (login) {
+			const isMatch = await bcryptjs.compare(password, login.password);
+
+			if (isMatch) {
+				navigate(`/home/${login.id}`);
+			} else {
+				seterror(true);
+				window.location.reload();
+			}
+		} else {
+			window.location.reload();
+		}
 	};
 	return (
 		<>
@@ -62,7 +82,7 @@ export default function Login() {
 							</label>
 						</div>
 						<div className="mt-7">
-							<Link to="/home">
+							<Link to="">
 								<button
 									className="btn btn-md w-full bg-green-700 border-none text-slate-100 hover:bg-green-800"
 									onClick={sendData}

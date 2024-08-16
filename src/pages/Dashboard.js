@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../parts/Navbar';
 import IDR from '../helpers/CurrencyIDR';
 import formatIDR from '../helpers/CurrencyChangeIDR';
@@ -17,6 +17,9 @@ import {
 	Legend,
 	ArcElement,
 } from 'chart.js';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import capitalizeLetter from '../helpers/CapitalizeEachWord';
 
 ChartJS.register(
 	CategoryScale,
@@ -99,7 +102,11 @@ export default function Dashboard() {
 	const [amount, setAmount] = useState('');
 	const [CategoryOption, setCategoryOption] = useState('');
 	const [Category, setCategory] = useState('');
+	const [dataUsers, setdataUsers] = useState(null);
+	const [Error, setError] = useState(false);
 	const categoryOptionList = ['Cash', 'QRIS', 'Transfer'];
+	const { id } = useParams();
+
 	const categoryList = [
 		'Income',
 		'Saving to goal',
@@ -110,10 +117,27 @@ export default function Dashboard() {
 	];
 	const insertBudgetButton = (e) => {
 		// Send to Backend
-		console.log(CategoryOption);
-		console.log(Category);
-		console.log(amount);
 	};
+
+	useEffect(() => {
+		const getData = async () => {
+			try {
+				const response = await axios.get(`http://localhost:3001/users/${id}`);
+				setdataUsers(response.data);
+				console.log(response);
+			} catch (error) {
+				console.error(
+					'Error fetching data:',
+					error.response?.status,
+					error.response?.data
+				);
+				setError(true);
+			}
+		};
+
+		getData();
+	}, [id]);
+
 	return (
 		<>
 			<div className="bg-slate-100">
@@ -122,7 +146,7 @@ export default function Dashboard() {
 					<h1 className="text-black font-semibold text-lg">
 						Good Morning,{' '}
 						<span className="text-green-700">
-							Farhan Izzaturrahman Andiejanto
+							{capitalizeLetter(dataUsers.username)}
 						</span>
 					</h1>
 					<div className="flex justify-between mt-10">
@@ -131,7 +155,9 @@ export default function Dashboard() {
 								<div className="">
 									<p className="text-slate-100 font-semibold">Cash</p>
 								</div>
-								<p className="text-slate-100 font-semibold">{IDR(500000)}</p>
+								<p className="text-slate-100 font-semibold">
+									{IDR(dataUsers.balance)}
+								</p>
 							</div>
 						</div>
 						<button
@@ -171,7 +197,7 @@ export default function Dashboard() {
 
 						<div
 							className={
-								records.length == 2
+								records.length === 2
 									? 'bg-gray-200 px-5 py-3 rounded-lg w-3/5 max-h-96 shadow-xl shadow-green-200'
 									: 'bg-gray-200 px-5 py-3 rounded-lg w-3/5 max-h-96 overflow-y-scroll shadow-xl shadow-green-200'
 							}

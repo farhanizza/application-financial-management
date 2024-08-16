@@ -1,0 +1,11 @@
+{
+	"users": [
+		{
+			"username": "farhanizza",
+			"email": "farhan@gmail.com",
+			"password": "$2a$10$Tp3uy8VTg8yBdNWwASZv5e6aUIqAmVc5vXaPe/4jKeYf3gAuzHBxe",
+			"balance": 0,
+			"id": 1
+		}
+	]
+}

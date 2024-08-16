@@ -1,2 +1,5 @@
 == Run project ==
 npm start
+
+== Run DB ==
+json-server --watch db.json --port 3001

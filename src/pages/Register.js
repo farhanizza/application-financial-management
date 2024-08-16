@@ -1,17 +1,36 @@
 import React, { useState } from 'react';
 import auth_page from '../assets/image/auth_page.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import bcryptjs from 'bcryptjs';
 
 export default function Login() {
 	const [Username, setUsername] = useState('');
 	const [Password, setPassword] = useState('');
 	const [Email, setEmail] = useState('');
+	const [error, seterror] = useState(false);
+	const navigate = useNavigate();
 
-	const sendData = (e) => {
-		// Send to Backend
-		console.log(Username);
-		console.log(Email);
-		console.log(Password);
+	const sendData = async (e) => {
+		e.preventDefault();
+		try {
+			const data = {
+				username: Username,
+				email: Email,
+				password: await bcryptjs.hash(Password, 10),
+				balance: 0,
+			};
+			const response = await axios.post('http://localhost:3001/users', data, {
+				headers: {
+					'Content-type': 'application/json',
+				},
+			});
+
+			navigate('/');
+		} catch (error) {
+			seterror(true);
+			console.log(error.response ? error.response.data : error.message);
+		}
 	};
 
 	return (

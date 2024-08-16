@@ -14,7 +14,7 @@ export default function App() {
 		<BrowserRouter>
 			<Routes>
 				<Route path="/" element={<Login />} />
-				<Route path="/home" element={<Dashboard />} />
+				<Route path="/home/:id" element={<Dashboard />} />
 				<Route path="/register" element={<Register />} />
 				<Route path="/statistic" element={<Statistics name="Statistics" />} />
 				<Route path="/goal" element={<Goal name="Goal" />} />
