@@ -20,6 +20,7 @@ import {
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import capitalizeLetter from '../helpers/CapitalizeEachWord';
+import Skeleton from '../parts/Skeleton';
 
 ChartJS.register(
 	CategoryScale,
@@ -144,10 +145,22 @@ export default function Dashboard() {
 				<Navbar />
 				<div className="mt-10 px-10 pb-10">
 					<h1 className="text-black font-semibold text-lg">
-						Good Morning,{' '}
-						<span className="text-green-700">
-							{capitalizeLetter(dataUsers.username)}
-						</span>
+						<div className="flex">
+							Good Morning,
+							{dataUsers ? (
+								<span className="text-green-700 ml-[5px] ">
+									{capitalizeLetter(dataUsers.username)}
+								</span>
+							) : (
+								<div className="flex items-center ml-[10px]">
+									<Skeleton
+										color="bg-gray-300"
+										size="h-2"
+										widthSize="w-[100px]"
+									/>
+								</div>
+							)}
+						</div>
 					</h1>
 					<div className="flex justify-between mt-10">
 						<div className="bg-green-700 px-5 py-3 rounded-lg w-1/3">
@@ -155,9 +168,19 @@ export default function Dashboard() {
 								<div className="">
 									<p className="text-slate-100 font-semibold">Cash</p>
 								</div>
-								<p className="text-slate-100 font-semibold">
-									{IDR(dataUsers.balance)}
-								</p>
+								{dataUsers ? (
+									<p className="text-slate-100 font-semibold">
+										{IDR(dataUsers.balance)}
+									</p>
+								) : (
+									<div className="flex items-center justify-center">
+										<Skeleton
+											color="bg-gray-300"
+											size="h-5"
+											widthSize="w-[70px]"
+										/>
+									</div>
+								)}
 							</div>
 						</div>
 						<button
