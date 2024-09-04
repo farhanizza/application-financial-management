@@ -1,11 +1,52 @@
 {
-	"users": [
-		{
-			"username": "farhanizza",
-			"email": "farhan@gmail.com",
-			"password": "$2a$10$Tp3uy8VTg8yBdNWwASZv5e6aUIqAmVc5vXaPe/4jKeYf3gAuzHBxe",
-			"balance": 0,
-			"id": 1
-		}
-	]
+  "users": [
+    {
+      "username": "farhanizza",
+      "email": "farhan@gmail.com",
+      "password": "$2a$10$Tp3uy8VTg8yBdNWwASZv5e6aUIqAmVc5vXaPe/4jKeYf3gAuzHBxe",
+      "id": 1
+    }
+  ],
+  "users_balance": [
+    {
+      "id_user": "1",
+      "type": "Income",
+      "category": "Cash",
+      "amount": "50.000",
+      "date": "2024-08-30T07:36:12.943Z",
+      "id": 1
+    },
+    {
+      "id_user": "1",
+      "type": "Income",
+      "category": "Cash",
+      "amount": "450.000",
+      "date": "2024-08-30T07:36:28.785Z",
+      "id": 2
+    },
+    {
+      "id_user": "1",
+      "type": "Income",
+      "category": "Cash",
+      "amount": "100.000",
+      "date": "2024-08-30T07:53:29.791Z",
+      "id": 3
+    },
+    {
+      "id_user": "1",
+      "type": "Food",
+      "category": "Cash",
+      "amount": "100.000",
+      "date": "2024-09-02T07:55:28.324Z",
+      "id": 4
+    },
+    {
+      "id_user": "1",
+      "type": "Income",
+      "category": "Cash",
+      "amount": "500.000",
+      "date": "2024-09-04T07:06:41.881Z",
+      "id": 5
+    }
+  ]
 }

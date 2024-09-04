@@ -18,7 +18,6 @@ export default function Login() {
 				username: Username,
 				email: Email,
 				password: await bcryptjs.hash(Password, 10),
-				balance: 0,
 			};
 			const response = await axios.post('http://localhost:3001/users', data, {
 				headers: {

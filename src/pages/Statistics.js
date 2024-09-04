@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../parts/Navbar';
 import {
 	AttachMoney,
@@ -6,12 +6,42 @@ import {
 	Settings,
 } from '@mui/icons-material';
 import IDR from '../helpers/CurrencyIDR';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 export default function Statistics(props) {
+	const [dataUsers, setdataUsers] = useState({
+		dataUsers: null,
+	});
+	const [Error, setError] = useState(false);
+
+	const { id } = useParams();
+
+	useEffect(() => {
+		const getData = async () => {
+			try {
+				const response = await axios.get(`http://localhost:3001/users/${id}`);
+
+				setdataUsers({
+					dataUsers: response.data,
+				});
+			} catch (error) {
+				console.error(
+					'Error fetching data:',
+					error.response?.status,
+					error.response?.data
+				);
+				setError(true);
+			}
+		};
+
+		getData();
+	}, [id]);
+
 	return (
 		<>
 			<div className="bg-slate-100 h-screen">
-				<Navbar />
+				<Navbar id={dataUsers.dataUsers?.id} />
 				<div className="mt-10 px-10 pb-10">
 					<h1 className="text-black font-semibold text-lg">{props.name}</h1>
 					<div className="flex justify-between mt-10">

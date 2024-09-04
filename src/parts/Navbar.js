@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-export default function Navbar() {
+export default function Navbar(id) {
 	const list_navbar = ['Home', 'Statistic', 'Goal', 'Settings', 'Logout'];
 	return (
 		<>
@@ -17,7 +17,7 @@ export default function Navbar() {
 									to={
 										list.toLowerCase() === 'logout'
 											? '/'
-											: `/${list.toLowerCase()}`
+											: `/${list.toLowerCase()}/${id?.id}`
 									}
 									className="text-md font-normal text-slate-100"
 								>

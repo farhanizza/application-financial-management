@@ -3,6 +3,7 @@ import auth_page from '../assets/image/auth_page.png';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import bcryptjs from 'bcryptjs';
+import Dashboard from './Dashboard';
 
 export default function Login() {
 	const [username, setUsername] = useState('');

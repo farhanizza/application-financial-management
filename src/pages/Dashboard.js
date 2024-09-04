@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from '../parts/Navbar';
+
+// Helpers
 import IDR from '../helpers/CurrencyIDR';
 import formatIDR from '../helpers/CurrencyChangeIDR';
+import capitalizeLetter from '../helpers/CapitalizeEachWord';
+import greetUser from '../helpers/Greetings';
+import { TotalAmount } from '../helpers/TotalAmount';
+import { formatDate } from '../helpers/FormatDate';
+// End
+
+// icon
 import SettingsIcon from '@mui/icons-material/Settings';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+// End
+
+// Chart
 import { Doughnut, Line } from 'react-chartjs-2';
 import {
 	Chart as ChartJS,
@@ -17,10 +28,17 @@ import {
 	Legend,
 	ArcElement,
 } from 'chart.js';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import capitalizeLetter from '../helpers/CapitalizeEachWord';
+// End
+
+// Parts
 import Skeleton from '../parts/Skeleton';
+import Navbar from '../parts/Navbar';
+// End
+
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import '../assets/css/index.css';
+import useFetch from '../helpers/hooks/useFetch';
 
 ChartJS.register(
 	CategoryScale,
@@ -33,59 +51,20 @@ ChartJS.register(
 	ArcElement
 );
 export default function Dashboard() {
-	const records = [
-		{
-			title: 'Income',
-			type: 'profit',
-			category: 'Cash',
-			amount: '500000',
-			date: 'Today',
-		},
-		{
-			title: 'Saving to goal',
-			type: 'loss',
-			category: 'Cash',
-			amount: '500000',
-			date: 'Yesterday',
-		},
+	const monthNamesEnglish = [
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December',
 	];
-
-	const data = {
-		datasets: [
-			{
-				data: [500000, 500000],
-				backgroundColor: ['rgba(21,128,61)', 'rgba(220,38,38)'],
-				borderWidth: 1,
-			},
-		],
-		labels: ['Income', 'Saving to goal'],
-	};
-
-	function getRandomNumber(min, max) {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
-	}
-
-	const data_line = {
-		labels: ['February 30', 'March 30', 'April 30', 'May 30'],
-		datasets: [
-			{
-				label: 'Profit',
-				data: ['February 30', 'March 30', 'April 30', 'May 30'].map(() =>
-					getRandomNumber(0, 1000)
-				),
-				borderColor: 'rgba(21,128,61)',
-				backgroundColor: 'rgba(21,128,61)',
-			},
-			{
-				label: 'Loss',
-				data: ['February 30', 'March 30', 'April 30', 'May 30'].map(() =>
-					getRandomNumber(0, 1000)
-				),
-				borderColor: 'rgba(220,38,38)',
-				backgroundColor: 'rgba(220,38,38)',
-			},
-		],
-	};
 
 	const opton_line = {
 		responsive: true,
@@ -103,9 +82,18 @@ export default function Dashboard() {
 	const [amount, setAmount] = useState('');
 	const [CategoryOption, setCategoryOption] = useState('');
 	const [Category, setCategory] = useState('');
-	const [dataUsers, setdataUsers] = useState(null);
+
+	const [dataUsers, setdataUsers] = useState({
+		dataUsers: null,
+		dataUsersBalance: null,
+		dataUsersLastRecord: null,
+	});
+
 	const [Error, setError] = useState(false);
 	const categoryOptionList = ['Cash', 'QRIS', 'Transfer'];
+	const [totalAmount, setTotalAmount] = useState(null);
+	const now = new Date();
+
 	const { id } = useParams();
 
 	const categoryList = [
@@ -116,16 +104,54 @@ export default function Dashboard() {
 		'Transportation',
 		'Vechicle',
 	];
-	const insertBudgetButton = (e) => {
+	const insertBudgetButton = async (e) => {
 		// Send to Backend
+		try {
+			const data = {
+				id_user: id,
+				type: Category,
+				category: CategoryOption,
+				amount: amount,
+				date: now,
+			};
+
+			const response = await axios.post(
+				'http://localhost:3001/users_balance',
+				data,
+				{
+					headers: {
+						'Content-type': 'application/json',
+					},
+				}
+			);
+			window.location.reload();
+		} catch (error) {
+			setError(true);
+			console.log(error.response ? error.response.data : error.message);
+		}
 	};
 
 	useEffect(() => {
-		const getData = async () => {
+		const GetData = async () => {
 			try {
 				const response = await axios.get(`http://localhost:3001/users/${id}`);
-				setdataUsers(response.data);
-				console.log(response);
+
+				const responseBalance = await axios.get(
+					`http://localhost:3001/users_balance?id_user=${id}`
+				);
+
+				const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
+
+				const filteredLastRecord = responseBalance.data.filter((item) => {
+					const itemDate = new Date(item.date);
+					return itemDate >= thirtyDaysAgo;
+				});
+
+				setdataUsers({
+					dataUsers: response.data,
+					dataUsersBalance: responseBalance.data,
+					dataUsersLastRecord: filteredLastRecord,
+				});
 			} catch (error) {
 				console.error(
 					'Error fetching data:',
@@ -136,20 +162,118 @@ export default function Dashboard() {
 			}
 		};
 
-		getData();
+		GetData();
 	}, [id]);
+
+	const Income = dataUsers?.dataUsersBalance
+		?.filter((balance) => balance.type === 'Income')
+		.map((balance) => {
+			return parseFloat(balance.amount?.replace('.', '') || '0');
+		})
+		.reduce((acc, value) => acc + value, 0);
+
+	const AmountDate = dataUsers?.dataUsersBalance
+		?.filter((balance) => balance.type === 'Income')
+		.map((balance) => {
+			const date = new Date(balance.date);
+			const monthIndex = date.getMonth();
+			return monthNamesEnglish[monthIndex];
+		});
+
+	const Expense = dataUsers?.dataUsersBalance
+		?.filter((balance) => balance.type !== 'Income')
+		.map((balance) => {
+			return parseFloat(balance.amount?.replace('.', '') || '0');
+		})
+		.reduce((acc, value) => acc + value, 0);
+
+	const data = {
+		datasets: [
+			{
+				data: [Income, Expense],
+				backgroundColor: ['rgba(21,128,61)', 'rgba(220,38,38)'],
+				borderWidth: 1,
+			},
+		],
+		labels: ['Income', 'Expense'],
+	};
+
+	const parseAmount = (amount) => {
+		// Menghapus karakter yang tidak diinginkan dan mengubah ke angka
+		return parseFloat(amount.replace(/[^\d.-]/g, '')) || 0;
+	};
+
+	const currentMonthIndex = now.getMonth();
+	const filteredMonths = monthNamesEnglish.slice(0, currentMonthIndex + 1);
+
+	const incomeData = filteredMonths.map((month) => {
+		return dataUsers?.dataUsersBalance
+			?.filter(
+				(balance) =>
+					balance.type === 'Income' &&
+					new Date(balance.date).toLocaleString('default', {
+						month: 'long',
+					}) === month
+			)
+			.reduce((sum, balance) => sum + parseAmount(balance.amount), 0);
+	});
+
+	console.log(incomeData);
+
+	const lossData = filteredMonths.map((month) => {
+		return dataUsers?.dataUsersBalance
+			?.filter(
+				(balance) =>
+					balance.type !== 'Income' &&
+					new Date(balance.date).toLocaleString('default', {
+						month: 'long',
+					}) === month
+			)
+			.reduce((sum, balance) => sum + parseAmount(balance.amount), 0);
+	});
+
+	const data_line = {
+		labels: filteredMonths,
+		datasets: [
+			{
+				label: 'Profit',
+				data: incomeData,
+				borderColor: 'rgba(21,128,61,1)',
+				backgroundColor: 'rgba(21,128,61,0.5)',
+			},
+			{
+				label: 'Loss',
+				data: lossData,
+				borderColor: 'rgba(220,38,38,1)',
+				backgroundColor: 'rgba(220,38,38,0.5)',
+			},
+		],
+	};
+
+	useEffect(() => {
+		const fetchTotalAmount = async () => {
+			if (dataUsers?.dataUsersBalance) {
+				const amount = await TotalAmount(
+					dataUsers?.dataUsersBalance?.map((balance) => balance.id_user)
+				);
+				setTotalAmount(amount);
+			}
+		};
+
+		fetchTotalAmount();
+	}, [dataUsers]);
 
 	return (
 		<>
 			<div className="bg-slate-100">
-				<Navbar />
+				{<Navbar id={dataUsers.dataUsers?.id} />}
 				<div className="mt-10 px-10 pb-10">
 					<h1 className="text-black font-semibold text-lg">
 						<div className="flex">
-							Good Morning,
-							{dataUsers ? (
+							{greetUser(now.getHours())}
+							{dataUsers.dataUsers ? (
 								<span className="text-green-700 ml-[5px] ">
-									{capitalizeLetter(dataUsers.username)}
+									{capitalizeLetter(dataUsers.dataUsers.username)}
 								</span>
 							) : (
 								<div className="flex items-center ml-[10px]">
@@ -168,9 +292,9 @@ export default function Dashboard() {
 								<div className="">
 									<p className="text-slate-100 font-semibold">Cash</p>
 								</div>
-								{dataUsers ? (
+								{dataUsers.dataUsersBalance ? (
 									<p className="text-slate-100 font-semibold">
-										{IDR(dataUsers.balance)}
+										{IDR(totalAmount)}
 									</p>
 								) : (
 									<div className="flex items-center justify-center">
@@ -193,7 +317,7 @@ export default function Dashboard() {
 						</button>
 					</div>
 					<div className="flex justify-between mt-10">
-						<div className="bg-gray-200 px-5 py-5 rounded-lg w-1/3 shadow-xl shadow-green-200">
+						<div className="bg-gray-200 px-5 py-5 rounded-lg w-1/3 shadow-xl shadow-green-200 scroll-auto">
 							<div className="flex justify-between">
 								<div className="">
 									<h1 className="font-semibold text-black">
@@ -205,7 +329,7 @@ export default function Dashboard() {
 							<div className="flex flex-col mt-5">
 								<h1 className="text-slate-500 font-medium">Last 30 Days</h1>
 								<h1 className="text-slate-500 font-medium mt-3">
-									{IDR(2442000)}
+									{IDR(totalAmount)}
 								</h1>
 								<div className="mt-4">
 									<Doughnut
@@ -220,9 +344,9 @@ export default function Dashboard() {
 
 						<div
 							className={
-								records.length === 2
+								dataUsers.dataUsersLastRecord == 2
 									? 'bg-gray-200 px-5 py-3 rounded-lg w-3/5 max-h-96 shadow-xl shadow-green-200'
-									: 'bg-gray-200 px-5 py-3 rounded-lg w-3/5 max-h-96 overflow-y-scroll shadow-xl shadow-green-200'
+									: 'bg-gray-200 px-5 py-3 rounded-lg w-3/5 max-h-96 overflow-y-scroll scrollbar-custom shadow-xl shadow-green-200'
 							}
 						>
 							<div className="flex justify-between">
@@ -235,58 +359,67 @@ export default function Dashboard() {
 							</div>
 							<div className="flex flex-col mt-5">
 								<h1 className="text-slate-500 font-medium">Last 30 Days</h1>
-								{records.map((record, index) => (
-									<div
-										key={index}
-										className="flex bg-white mt-5 rounded-xl px-7 py-5"
-									>
+								{Array.isArray(dataUsers.dataUsersLastRecord) &&
+								dataUsers.dataUsersLastRecord.length > 0 ? (
+									dataUsers.dataUsersLastRecord.map((record, index) => (
 										<div
-											className={
-												record.type === 'profit'
-													? 'bg-green-700 flex items-center justify-center rounded-lg mr-5 w-10 px-5'
-													: record.type === 'loss'
-													? 'bg-red-600 flex items-center justify-center rounded-lg mr-5 w-10 px-5'
-													: ''
-											}
+											key={index}
+											className="flex bg-white mt-5 rounded-xl px-7 py-5"
 										>
-											{record.type === 'profit' ? (
-												<AttachMoneyIcon className="text-white" />
-											) : record.type === 'loss' ? (
-												<AccountBalanceWalletIcon className="text-white" />
-											) : (
-												''
-											)}
-										</div>
-										<div className="flex flex-col w-full">
-											<div className="text-black font-semibold">
-												{record.title}
-											</div>
-											<h1 className="text-slate-500 font-medium mt-3">
-												{record.category}
-											</h1>
-										</div>
-										<div className="flex items-end flex-col">
-											<h1
+											<div
 												className={
-													record.type === 'profit'
-														? 'text-green-500 font-semibold'
-														: record.type === 'loss'
-														? 'text-red-600 font-semibold'
+													record.type === 'Income'
+														? 'bg-green-700 flex items-center justify-center rounded-lg mr-5 w-10 px-5'
+														: categoryList.includes(record.type) &&
+														  record.type !== 'Income'
+														? 'bg-red-600 flex items-center justify-center rounded-lg mr-5 w-10 px-5'
 														: ''
 												}
 											>
-												{record.type === 'profit'
-													? IDR(record.amount)
-													: record.type === 'loss'
-													? IDR(record.amount)
-													: ''}
-											</h1>
-											<h1 className="text-slate-500 font-medium mt-3">
-												{record.date}
-											</h1>
+												{record.type === 'Income' ? (
+													<AttachMoneyIcon className="text-white" />
+												) : categoryList.includes(record.type) &&
+												  record.type !== 'Income' ? (
+													<AccountBalanceWalletIcon className="text-white" />
+												) : (
+													''
+												)}
+											</div>
+											<div className="flex flex-col w-full">
+												<div className="text-black font-semibold">
+													{record.type}
+												</div>
+												<h1 className="text-slate-500 font-medium mt-3">
+													{record.category}
+												</h1>
+											</div>
+											<div className="flex items-end flex-col">
+												<h1
+													className={
+														record.type === 'Income'
+															? 'text-green-500 font-semibold'
+															: categoryList.includes(record.type) &&
+															  record.type !== 'Income'
+															? 'text-red-600 font-semibold'
+															: ''
+													}
+												>
+													{record.type === 'Income'
+														? record.amount
+														: categoryList.includes(record.type) &&
+														  record.type !== 'Income'
+														? record.amount
+														: ''}
+												</h1>
+												<h1 className="text-slate-500 font-medium mt-3">
+													{formatDate(record.date)}
+												</h1>
+											</div>
 										</div>
-									</div>
-								))}
+									))
+								) : (
+									<p>No records available.</p>
+								)}
 							</div>
 						</div>
 					</div>
@@ -333,7 +466,7 @@ export default function Dashboard() {
 									value={CategoryOption}
 									onChange={(e) => setCategoryOption(e.target.value)}
 								>
-									<option disabled value={(e) => setCategoryOption('')}>
+									<option value={(e) => setCategoryOption('')}>
 										Select category option
 									</option>
 									{categoryOptionList.map((value, index) => (
@@ -356,7 +489,7 @@ export default function Dashboard() {
 									value={Category}
 									onChange={(e) => setCategory(e.target.value)}
 								>
-									<option disabled value={(e) => setCategory('')}>
+									<option value={(e) => setCategory('')}>
 										Select category
 									</option>
 									{categoryList.map((value, index) => (

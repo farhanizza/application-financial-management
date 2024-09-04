@@ -16,7 +16,10 @@ export default function App() {
 				<Route path="/" element={<Login />} />
 				<Route path="/home/:id" element={<Dashboard />} />
 				<Route path="/register" element={<Register />} />
-				<Route path="/statistic" element={<Statistics name="Statistics" />} />
+				<Route
+					path="/statistic/:id"
+					element={<Statistics name="Statistics" />}
+				/>
 				<Route path="/goal" element={<Goal name="Goal" />} />
 				<Route path="/goal/:id" element={<GoalDetail />} />
 				<Route path="/settings" element={<Settings />} />

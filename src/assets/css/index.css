@@ -113,3 +113,24 @@ body {
 	font-weight: 900;
 	font-style: italic;
 }
+
+/* Scrollbar */
+
+/* styles.css atau file CSS kustom Anda */
+.scrollbar-custom::-webkit-scrollbar {
+	width: 12px; /* Lebar scrollbar */
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+	background-color: #ffffff; /* Warna scrollbar */
+	border-radius: 10px; /* Rounded corners untuk scrollbar */
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+	background-color: #f0f0f0; /* Warna latar belakang track scrollbar */
+}
+
+.scrollbar-custom {
+	scrollbar-width: thin; /* Untuk Firefox */
+	scrollbar-color: #ffffff #f0f0f0; /* Untuk Firefox */
+}
