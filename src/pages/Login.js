@@ -3,7 +3,6 @@ import auth_page from '../assets/image/auth_page.png';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import bcryptjs from 'bcryptjs';
-import Dashboard from './Dashboard';
 
 export default function Login() {
 	const [username, setUsername] = useState('');
@@ -38,7 +37,7 @@ export default function Login() {
 				<img src={auth_page} alt="" className="w-1/4" />
 				<div className="flex flex-col justify-center items-center w-full">
 					<div className="max-w-lg mb-10">
-						<h1 className="font-bold text-4xl font-poppins text-gray-800">
+						<h1 className="font-bold text-4xl text-gray-800 font-link">
 							Application Management Financial
 						</h1>
 						<div className="mt-10">

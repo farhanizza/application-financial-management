@@ -64,7 +64,7 @@ export default function Goal(props) {
 					</div>
 					<div className="mt-10 bg-gray-200 px-5 py-5 rounded-lg shadow-xl shadow-green-200 cursor-pointer">
 						{dummy_data.map((value, key) => (
-							<Link key={key} to={`/goal/${value.id}`}>
+							<Link key={key} to={`/goal/detail/${value.id}`}>
 								<div className="flex mb-5">
 									<div className="flex py-5 px-3 rounded-lg bg-green-500 mr-5">
 										<AccountBalanceWallet className="text-white" />

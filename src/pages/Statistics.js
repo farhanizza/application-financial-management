@@ -8,11 +8,11 @@ import {
 import IDR from '../helpers/CurrencyIDR';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import '../assets/css/index.css';
 
 export default function Statistics(props) {
-	const [dataUsers, setdataUsers] = useState({
-		dataUsers: null,
-	});
+	const [dataUsers, setdataUsers] = useState('');
+	const [dataAmount, setdataAmount] = useState('');
 	const [Error, setError] = useState(false);
 
 	const { id } = useParams();
@@ -22,9 +22,13 @@ export default function Statistics(props) {
 			try {
 				const response = await axios.get(`http://localhost:3001/users/${id}`);
 
-				setdataUsers({
-					dataUsers: response.data,
-				});
+				const responseAmount = await axios.get(
+					`http://localhost:3001/users_balance?id_user=${id}`
+				);
+
+				setdataAmount(responseAmount.data);
+
+				setdataUsers(response.data);
 			} catch (error) {
 				console.error(
 					'Error fetching data:',
@@ -38,10 +42,46 @@ export default function Statistics(props) {
 		getData();
 	}, [id]);
 
+	const MaxamountsIncome = (dataAmount || [])
+		.filter((amount) => amount.type === 'Income')
+		.map((data) => Number(data.amount.replace('.', '')));
+
+	const MaxamountsExpense = (dataAmount || [])
+		.filter((amount) => amount.type !== 'Income')
+		.map((data) => Number(data.amount.replace('.', '')));
+
+	const MinamountsIncome = (dataAmount || [])
+		.filter((amount) => amount.type === 'Income')
+		.map((data) => Number(data.amount.replace('.', '')));
+
+	const MinamountsExpense = (dataAmount || [])
+		.filter((amount) => amount.type !== 'Income')
+		.map((data) => Number(data.amount.replace('.', '')));
+
+	const SumAmountIncome =
+		Math.max(...MaxamountsIncome) + Math.min(...MinamountsIncome);
+
+	const SumAmountExpense =
+		Math.max(...MaxamountsExpense) + Math.min(...MinamountsExpense);
+
+	const Income = (dataAmount || [])
+		.filter((balance) => balance.type === 'Income')
+		.map((balance) => {
+			return parseFloat(balance.amount?.replace('.', '') || '0');
+		})
+		.reduce((acc, value) => acc + value, 0);
+
+	const Expense = (dataAmount || [])
+		.filter((balance) => balance.type !== 'Income')
+		.map((balance) => {
+			return parseFloat(balance.amount?.replace('.', '') || '0');
+		})
+		.reduce((acc, value) => acc + value, 0);
+
 	return (
 		<>
 			<div className="bg-slate-100 h-screen">
-				<Navbar id={dataUsers.dataUsers?.id} />
+				<Navbar id={dataUsers?.id} />
 				<div className="mt-10 px-10 pb-10">
 					<h1 className="text-black font-semibold text-lg">{props.name}</h1>
 					<div className="flex justify-between mt-10">
@@ -82,10 +122,10 @@ export default function Statistics(props) {
 											Highest
 										</td>
 										<td className="py-2 text-green-500 font-semibold">
-											{IDR(125000)}
+											{IDR(Math.max(...MaxamountsIncome))}
 										</td>
 										<td className="py-2 text-red-500 font-semibold">
-											{IDR(52500)}
+											{IDR(Math.max(...MaxamountsExpense))}
 										</td>
 									</tr>
 									<tr>
@@ -93,25 +133,25 @@ export default function Statistics(props) {
 											Lowest
 										</td>
 										<td className="py-2 text-green-500 font-semibold">
-											{IDR(125000)}
+											{IDR(Math.min(...MinamountsIncome))}
 										</td>
 										<td className="py-2 text-red-500 font-semibold">
-											{IDR(52500)}
+											{IDR(Math.min(...MinamountsExpense))}
 										</td>
 									</tr>
 									<tr>
 										<td className="py-2 text-slate-500 font-semibold">Total</td>
 										<td className="py-2 text-green-500 font-semibold">
-											{IDR(125000)}
+											{IDR(SumAmountIncome)}
 										</td>
 										<td className="py-2 text-red-500 font-semibold">
-											{IDR(52500)}
+											{IDR(SumAmountExpense)}
 										</td>
 									</tr>
 								</tbody>
 							</table>
 						</div>
-						<div className="bg-gray-200 px-5 py-5 rounded-lg w-3/5 shadow-xl shadow-green-200 hover:overflow-y-scroll  max-h-96">
+						<div className="bg-gray-200 px-5 py-5 rounded-lg w-3/5 shadow-xl shadow-green-200 overflow-y-scroll scrollbar-custom max-h-96">
 							<div className="flex justify-between">
 								<div className="">
 									<h1 className="font-semibold text-black">
@@ -128,47 +168,59 @@ export default function Statistics(props) {
 									<div className="flex justify-between">
 										<h1 className="font-semibold text-slate-100">Income</h1>
 										<h1 className="font-semibold text-slate-100">
-											{IDR(1000000)}
+											{IDR(Income)}
 										</h1>
 									</div>
 								</div>
 							</div>
-							<div className="mt-3">
-								<div className="flex pr-5">
-									<div className="bg-green-700 flex items-center justify-center rounded-lg mr-5 w-10 px-5 py-5">
-										<AttachMoney className="text-white" />
+							{(dataAmount || [])
+								.filter((data) => data.type === 'Income')
+								.map((item, key) => (
+									<div className="mt-3" key={key}>
+										<div className="flex pr-5">
+											<div className="bg-green-700 flex items-center justify-center rounded-lg mr-5 w-10 px-5 py-5">
+												<AttachMoney className="text-white" />
+											</div>
+											<div className="flex items-center w-full justify-between">
+												<h1 className="font-semibold text-black">
+													{item.type}
+												</h1>
+												<h1 className="font-semibold text-slate-500">
+													{item.amount}
+												</h1>
+											</div>
+										</div>
 									</div>
-									<div className="flex items-center w-full justify-between">
-										<h1 className="font-semibold text-black">Income</h1>
-										<h1 className="font-semibold text-slate-500">
-											{IDR(1000000)}
-										</h1>
-									</div>
-								</div>
-							</div>
+								))}
 							<div className="mt-5">
 								<div className="w-full bg-green-800 px-5 py-2 rounded-lg">
 									<div className="flex justify-between">
 										<h1 className="font-semibold text-slate-100">Expenses</h1>
 										<h1 className="font-semibold text-slate-100">
-											{IDR(500000)}
+											{IDR(Expense)}
 										</h1>
 									</div>
 								</div>
 							</div>
-							<div className="mt-3">
-								<div className="flex pr-5">
-									<div className="bg-red-700 flex items-center justify-center rounded-lg mr-5 w-10 px-5 py-5">
-										<AccountBalanceWallet className="text-white" />
+							{(dataAmount || [])
+								.filter((data) => data.type !== 'Income')
+								.map((item, key) => (
+									<div className="mt-3" key={key}>
+										<div className="flex pr-5">
+											<div className="bg-red-700 flex items-center justify-center rounded-lg mr-5 w-10 px-5 py-5">
+												<AccountBalanceWallet className="text-white" />
+											</div>
+											<div className="flex items-center w-full justify-between">
+												<h1 className="font-semibold text-black">
+													{item.type}
+												</h1>
+												<h1 className="font-semibold text-slate-500">
+													{item.amount}
+												</h1>
+											</div>
+										</div>
 									</div>
-									<div className="flex items-center w-full justify-between">
-										<h1 className="font-semibold text-black">Saving to goal</h1>
-										<h1 className="font-semibold text-slate-500">
-											{IDR(1000000)}
-										</h1>
-									</div>
-								</div>
-							</div>
+								))}
 						</div>
 					</div>
 				</div>

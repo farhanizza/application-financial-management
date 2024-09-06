@@ -172,14 +172,6 @@ export default function Dashboard() {
 		})
 		.reduce((acc, value) => acc + value, 0);
 
-	const AmountDate = dataUsers?.dataUsersBalance
-		?.filter((balance) => balance.type === 'Income')
-		.map((balance) => {
-			const date = new Date(balance.date);
-			const monthIndex = date.getMonth();
-			return monthNamesEnglish[monthIndex];
-		});
-
 	const Expense = dataUsers?.dataUsersBalance
 		?.filter((balance) => balance.type !== 'Income')
 		.map((balance) => {
@@ -217,8 +209,6 @@ export default function Dashboard() {
 			)
 			.reduce((sum, balance) => sum + parseAmount(balance.amount), 0);
 	});
-
-	console.log(incomeData);
 
 	const lossData = filteredMonths.map((month) => {
 		return dataUsers?.dataUsersBalance

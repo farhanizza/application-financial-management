@@ -20,8 +20,8 @@ export default function App() {
 					path="/statistic/:id"
 					element={<Statistics name="Statistics" />}
 				/>
-				<Route path="/goal" element={<Goal name="Goal" />} />
-				<Route path="/goal/:id" element={<GoalDetail />} />
+				<Route path="/goal/:id" element={<Goal name="Goal" />} />
+				<Route path="/goal/detail/:id" element={<GoalDetail />} />
 				<Route path="/settings" element={<Settings />} />
 				<Route path="*" element={<Notfound />} />
 			</Routes>
