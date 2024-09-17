@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../parts/Navbar';
 import IDR from '../helpers/CurrencyIDR';
 import formatIDR from '../helpers/CurrencyChangeIDR';
 import { Settings, Add, AccountBalanceWallet } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import axios from 'axios';
+import useFetch from '../helpers/hooks/useFetch';
+import '../assets/css/index.css';
 
 export default function Goal(props) {
-	const [amount, setAmount] = useState('');
-	const [Filter, setFilter] = useState('');
-	const [Category, setCategory] = useState('');
 	const categoryList = [
 		'Income',
 		'Saving to goal',
@@ -27,16 +27,76 @@ export default function Goal(props) {
 			saved: 500000,
 		},
 	];
-	const insertBudgetButton = (e) => {
-		// Send to Backend
-		console.log(Filter);
-		console.log(Category);
-		console.log(amount);
+
+	const { id } = useParams();
+
+	const [amount, setAmount] = useState('');
+	const [Filter, setFilter] = useState('');
+	const [Category, setCategory] = useState('');
+	const [Goal, setGoal] = useState('');
+	const [GoalDate, setGoalDate] = useState('');
+	const [Note, setNote] = useState('');
+	const [ErrorPost, setErrorPost] = useState(false);
+	const [GoalData, setGoalData] = useState('');
+
+	const insertBudgetButton = async (e) => {
+		e.preventDefault();
+		try {
+			const dataGoal = {
+				id_user: id,
+				goalname: Goal,
+				amount: amount,
+				goaldate: GoalDate,
+				category: Category,
+				note: Note,
+				isActive: 0,
+			};
+
+			const response = await axios.post(
+				'http://localhost:3001/goal',
+				dataGoal,
+				{
+					headers: {
+						'Content-type': 'application/json',
+					},
+				}
+			);
+
+			window.location.reload();
+		} catch (error) {
+			setErrorPost(true);
+			console.log(error.response ? error.response.data : error.message);
+		}
 	};
+
+	const { data, error, loading } = useFetch(
+		`http://localhost:3001/users/${id}`
+	);
+
+	useEffect(() => {
+		const GetData = async () => {
+			try {
+				const response = await axios.get(
+					`http://localhost:3001/goal?id_user=${id}`
+				);
+
+				setGoalData(response.data);
+			} catch (error) {
+				console.error(
+					'Error fetching data:',
+					error.response?.status,
+					error.response?.data
+				);
+			}
+		};
+
+		GetData();
+	}, [id]);
+
 	return (
 		<>
 			<div className="bg-slate-100 h-screen">
-				<Navbar />
+				<Navbar id={data?.id} />
 				<div className="mt-10 px-10 pb-10">
 					<div className="flex">
 						<h1 className="text-black font-semibold text-lg">{props.name}</h1>
@@ -63,8 +123,8 @@ export default function Goal(props) {
 						<h1 className="font-semibold text-slate-100">Active</h1>
 					</div>
 					<div className="mt-10 bg-gray-200 px-5 py-5 rounded-lg shadow-xl shadow-green-200 cursor-pointer">
-						{dummy_data.map((value, key) => (
-							<Link key={key} to={`/goal/detail/${value.id}`}>
+						{GoalData.map((value, key) => (
+							<Link key={key} to={`/goal/detail/${value.id_user}`}>
 								<div className="flex mb-5">
 									<div className="flex py-5 px-3 rounded-lg bg-green-500 mr-5">
 										<AccountBalanceWallet className="text-white" />
@@ -72,18 +132,18 @@ export default function Goal(props) {
 									<div className="flex w-full justify-between">
 										<div className="flex flex-col">
 											<h1 className="font-semibold text-black">
-												{value.title}
+												{value.goalname}
 											</h1>
 											<h1 className="mt-3 font-medium text-gray-500">
-												{value.target_date}
+												{value.goaldate}
 											</h1>
 										</div>
 										<div className="flex flex-col">
 											<h1 className="font-semibold text-black">
-												Goal: {IDR(value.goal)}
+												Goal: {value.amount}
 											</h1>
 											<h1 className="mt-3 text-green-500 font-medium">
-												Saved: {IDR(value.saved)}
+												Saved: {value.amount}
 											</h1>
 										</div>
 									</div>
@@ -99,7 +159,7 @@ export default function Goal(props) {
 				</div>
 			</div>
 			<dialog id="modal_set_goal" className="modal">
-				<div className="modal-box bg-slate-100">
+				<div className="modal-box bg-slate-100 overflow-y-scroll scrollbar-custom">
 					<form method="dialog">
 						<div className="w-full flex justify-between bg-green-700 px-5 py-2 rounded-lg">
 							<h1 className="text-slate-100 font-semibold mt-1">Insert Goal</h1>
@@ -120,6 +180,7 @@ export default function Goal(props) {
 									type="text"
 									placeholder="Type goal name"
 									className="input input-bordered w-full max-w-lg bg-slate-100"
+									onChange={(e) => setGoal(e.target.value)}
 								/>
 							</label>
 						</div>
@@ -149,6 +210,7 @@ export default function Goal(props) {
 								<input
 									type="date"
 									className="input input-bordered w-full max-w-lg bg-slate-100"
+									onChange={(e) => setGoalDate(e.target.value)}
 								/>
 							</label>
 						</div>
@@ -164,7 +226,7 @@ export default function Goal(props) {
 									value={Category}
 									onChange={(e) => setCategory(e.target.value)}
 								>
-									<option disabled value={(e) => setCategory('')}>
+									<option value={(e) => setCategory('')}>
 										Select category
 									</option>
 									{categoryList.map((value, index) => (
@@ -186,6 +248,7 @@ export default function Goal(props) {
 									type="text"
 									placeholder="Type note"
 									className="textarea textarea-bordered w-full max-w-lg bg-slate-100"
+									onChange={(e) => setNote(e.target.value)}
 								/>
 							</label>
 						</div>

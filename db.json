@@ -48,5 +48,17 @@
       "date": "2024-09-04T07:06:41.881Z",
       "id": 5
     }
+  ],
+  "goal": [
+    {
+      "id_user": "1",
+      "goalname": "Ipfasad",
+      "amount": "1.111.111",
+      "goaldate": "2024-09-11",
+      "category": "Saving to goal",
+      "note": "aaaaaaaaa",
+      "isActive": 0,
+      "id": 1
+    }
   ]
 }
