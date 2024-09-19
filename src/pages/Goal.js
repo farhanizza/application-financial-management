@@ -9,24 +9,8 @@ import useFetch from '../helpers/hooks/useFetch';
 import '../assets/css/index.css';
 
 export default function Goal(props) {
-	const categoryList = [
-		'Income',
-		'Saving to goal',
-		'Investment',
-		'Food',
-		'Transportation',
-		'Vechicle',
-	];
+	const categoryList = ['Saving to goal', 'Investment'];
 	const filterList = ['Active', 'Reached', 'Not Reached'];
-	const dummy_data = [
-		{
-			id: 1,
-			title: 'Emergency fund',
-			goal: 1000000,
-			target_date: 'No target date',
-			saved: 500000,
-		},
-	];
 
 	const { id } = useParams();
 
@@ -46,6 +30,7 @@ export default function Goal(props) {
 				id_user: id,
 				goalname: Goal,
 				amount: amount,
+				saved: 0,
 				goaldate: GoalDate,
 				category: Category,
 				note: Note,
@@ -123,8 +108,8 @@ export default function Goal(props) {
 						<h1 className="font-semibold text-slate-100">Active</h1>
 					</div>
 					<div className="mt-10 bg-gray-200 px-5 py-5 rounded-lg shadow-xl shadow-green-200 cursor-pointer">
-						{GoalData.map((value, key) => (
-							<Link key={key} to={`/goal/detail/${value.id_user}`}>
+						{(GoalData || []).map((value, key) => (
+							<Link key={key} to={`/goal/detail/${value.id_user}/${value.id}`}>
 								<div className="flex mb-5">
 									<div className="flex py-5 px-3 rounded-lg bg-green-500 mr-5">
 										<AccountBalanceWallet className="text-white" />
@@ -140,18 +125,18 @@ export default function Goal(props) {
 										</div>
 										<div className="flex flex-col">
 											<h1 className="font-semibold text-black">
-												Goal: {value.amount}
+												Goal: Rp. {value.amount}
 											</h1>
 											<h1 className="mt-3 text-green-500 font-medium">
-												Saved: {value.amount}
+												Saved: Rp. {value.saved}
 											</h1>
 										</div>
 									</div>
 								</div>
 								<progress
 									className="progress progress-success h-5"
-									value="70"
-									max="100"
+									value={value.saved}
+									max={value.amount}
 								></progress>
 							</Link>
 						))}

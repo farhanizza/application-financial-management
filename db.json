@@ -52,11 +52,12 @@
   "goal": [
     {
       "id_user": "1",
-      "goalname": "Ipfasad",
-      "amount": "1.111.111",
-      "goaldate": "2024-09-11",
-      "category": "Saving to goal",
-      "note": "aaaaaaaaa",
+      "goalname": "M3 Pro",
+      "amount": "32.000.000",
+      "saved": "100.000",
+      "goaldate": "2025-01-01",
+      "category": "Investment",
+      "note": "Test",
       "isActive": 0,
       "id": 1
     }

@@ -21,7 +21,7 @@ export default function App() {
 					element={<Statistics name="Statistics" />}
 				/>
 				<Route path="/goal/:id" element={<Goal name="Goal" />} />
-				<Route path="/goal/detail/:id" element={<GoalDetail />} />
+				<Route path="/goal/detail/:id/:id_goal" element={<GoalDetail />} />
 				<Route path="/settings" element={<Settings />} />
 				<Route path="*" element={<Notfound />} />
 			</Routes>
