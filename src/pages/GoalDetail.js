@@ -38,7 +38,7 @@ export default function GoalDetail() {
 			ctx.font = `600 ${fontSize}em sans-serif`;
 			ctx.textBaseline = 'middle';
 
-			const text = `Total Reached ${totalPercentageReached}%`,
+			const text = `Total Reached ${totalPercentageReached.toString()}%`,
 				textX = Math.round((width - ctx.measureText(text).width) / 2),
 				textY = height / 2;
 
@@ -94,6 +94,21 @@ export default function GoalDetail() {
 		}
 	};
 
+	const handleSetGoal = (id_goal) => {
+		try {
+			const dataGoal = {
+				isActive: 1,
+			};
+			axios
+				.patch(`http://localhost:3001/goal/${id_goal}`, dataGoal)
+				.then(() => {
+					window.location.reload();
+				});
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	const now = new Date();
 
 	const estimatedWeek = (DataGoal || []).map((data) => {
@@ -104,14 +119,16 @@ export default function GoalDetail() {
 		return diffInWeeks;
 	});
 
-	console.log(totalPercentageReached);
-
 	const dataChart = {
 		datasets: [
 			{
 				data: [
-					(DataGoal || []).map((data) => parseInt(data.saved)),
-					(DataGoal || []).map((data) => parseInt(data.amount)),
+					(DataGoal || []).map((data) =>
+						parseInt(data.saved.replace(/\./g, ''), 10)
+					),
+					(DataGoal || []).map((data) =>
+						parseInt(data.amount.replace(/\./g, ''), 10)
+					),
 				],
 				backgroundColor: ['rgb(34,169,95)', 'rgb(240,240,240)'],
 			},
@@ -186,7 +203,12 @@ export default function GoalDetail() {
 											>
 												Add saved amount
 											</button>
-											<button className="btn btn-sm px-5 bg-transparent text-black hover:bg-transparent border-none mt-5">
+											<button
+												className="btn btn-sm px-5 bg-transparent text-black hover:bg-transparent border-none mt-5"
+												onClick={() => {
+													handleSetGoal();
+												}}
+											>
 												Set goal as reached
 											</button>
 										</div>

@@ -135,8 +135,8 @@ export default function Goal(props) {
 								</div>
 								<progress
 									className="progress progress-success h-5"
-									value={value.saved}
-									max={value.amount}
+									value={parseInt(value.saved.replace(/\./g, ''), 10)}
+									max={parseInt(value.amount.replace(/\./g, ''), 10)}
 								></progress>
 							</Link>
 						))}
