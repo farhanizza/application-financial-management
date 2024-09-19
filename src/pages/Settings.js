@@ -1,14 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../parts/Navbar';
+import { useNavigate, useParams } from 'react-router-dom';
+import useFetch from '../helpers/hooks/useFetch';
+import bcryptjs from 'bcryptjs';
+import axios from 'axios';
 
 export default function Settings() {
+	const navigate = useNavigate();
+	const { id } = useParams();
+
+	const { data, error, loading } = useFetch(
+		`http://localhost:3001/users/${id}`
+	);
+
+	const [Username, setUsername] = useState('');
+	const [Password, setPassword] = useState('');
+	const [Email, setEmail] = useState('');
+
+	useEffect(() => {
+		if (data) {
+			setUsername(data.username || '');
+			setPassword(data.password || '');
+			setEmail(data.email || '');
+		}
+	}, [data]);
+
+	const handleUpdateSaved = async (id) => {
+		try {
+			const data = {
+				username: Username,
+				email: Email,
+				password: await bcryptjs.hash(Password, 10),
+			};
+
+			await axios.patch(`http://localhost:3001/users/${id}`, data).then(() => {
+				navigate(`/home/${id}`);
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	return (
 		<div className="bg-slate-100 h-screen">
-			<Navbar />
+			<Navbar id={data?.id} />
 			<div className="flex justify-center mt-20">
 				<div className="avatar">
 					<div className="w-28 rounded-full">
-						<img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+						<img src={`../../assets/image/photo.png`} />
 					</div>
 				</div>
 			</div>
@@ -22,8 +61,9 @@ export default function Settings() {
 						</div>
 						<input
 							type="text"
-							placeholder="Farhan Izzaturrahman Andiejanto"
+							value={Username}
 							className="input input-bordered input-sm w-full bg-transparent border-slate-500 font-semibold"
+							onChange={(e) => setUsername(e.target.value)}
 						/>
 					</label>
 				</div>
@@ -36,8 +76,9 @@ export default function Settings() {
 						</div>
 						<input
 							type="email"
-							placeholder="Farhan@gmail.com"
+							value={Email}
 							className="input input-bordered input-sm w-full bg-transparent border-slate-500 font-semibold"
+							onChange={(e) => setEmail(e.target.value)}
 						/>
 					</label>
 				</div>
@@ -51,11 +92,15 @@ export default function Settings() {
 						<input
 							type="password"
 							className="input input-bordered input-sm w-full bg-transparent border-slate-500 font-semibold"
+							onChange={(e) => setPassword(e.target.value)}
 						/>
 					</label>
 				</div>
 				<div className="mt-10 flex justify-end">
-					<button className="btn btn-sm bg-green-700 border-none text-slate-100 px-5">
+					<button
+						className="btn btn-sm bg-green-700 border-none text-slate-100 px-5"
+						onClick={() => handleUpdateSaved(id)}
+					>
 						Submit
 					</button>
 				</div>
