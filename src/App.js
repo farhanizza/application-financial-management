@@ -22,7 +22,7 @@ export default function App() {
 				/>
 				<Route path="/goal/:id" element={<Goal name="Goal" />} />
 				<Route path="/goal/detail/:id/:id_goal" element={<GoalDetail />} />
-				<Route path="/settings" element={<Settings />} />
+				<Route path="/settings/:id" element={<Settings />} />
 				<Route path="*" element={<Notfound />} />
 			</Routes>
 		</BrowserRouter>
