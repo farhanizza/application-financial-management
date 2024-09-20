@@ -54,12 +54,18 @@
       "id_user": "1",
       "goalname": "M3 Pro",
       "amount": "32.000.000",
-      "saved": "100.000",
+      "saved": "10.000.000",
       "goaldate": "2025-01-01",
       "category": "Investment",
       "note": "Test",
       "isActive": 0,
       "id": 1
+    },
+    {
+      "id_user": "1",
+      "saved": "100.000",
+      "isActive": 0,
+      "id": 2
     }
   ]
 }
