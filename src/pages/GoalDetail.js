@@ -5,18 +5,20 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import formatIDR from '../helpers/CurrencyChangeIDR';
 import useFetch from '../helpers/hooks/useFetch';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 export default function GoalDetail() {
 	const [Amount, setAmount] = useState('');
 	const [DataGoal, setDataGoal] = useState('');
+	// const [CalculateAmount, setCalculateAmount] = useState('');
+	const navigate = useNavigate();
 
 	ChartJS.register(ArcElement, Tooltip, Legend);
 
 	const percentageTotalReached = (DataGoal || []).map((data) => {
-		const amount = parseInt(data.amount.replace(/\./g, ''), 10);
-		const saved = parseInt(data.saved, 10);
+		const amount = parseInt(data?.amount?.replace(/\./g, ''), 10);
+		const saved = parseInt(data?.saved, 10);
 
 		return String(Math.ceil((saved / amount) * 100));
 	});
@@ -79,13 +81,20 @@ export default function GoalDetail() {
 		});
 	};
 
-	const handleUpdateSaved = (id_goal) => {
+	const handleUpdateSaved = async () => {
 		try {
 			const dataGoal = {
+				id_user: DataGoal[0].id_user,
 				saved: Amount,
+				isActive: DataGoal[0].isActive,
 			};
-			axios
-				.patch(`http://localhost:3001/goal/${id_goal}`, dataGoal)
+
+			await axios
+				.post(`http://localhost:3001/goal`, dataGoal, {
+					headers: {
+						'Content-type': 'application/json',
+					},
+				})
 				.then(() => {
 					window.location.reload();
 				});
@@ -96,13 +105,13 @@ export default function GoalDetail() {
 
 	const handleSetGoal = (id_goal) => {
 		try {
-			const dataGoal = {
+			const dataSetGoal = {
 				isActive: 1,
 			};
 			axios
-				.patch(`http://localhost:3001/goal/${id_goal}`, dataGoal)
+				.patch(`http://localhost:3001/goal/${id_goal}`, dataSetGoal)
 				.then(() => {
-					window.location.reload();
+					navigate(`/goal/${id}`);
 				});
 		} catch (error) {
 			console.log(error);
@@ -112,7 +121,7 @@ export default function GoalDetail() {
 	const now = new Date();
 
 	const estimatedWeek = (DataGoal || []).map((data) => {
-		const goalDate = new Date(data.goaldate);
+		const goalDate = new Date(data?.goaldate);
 		const diffInTime = goalDate - now;
 		const diffInDays = diffInTime / (1000 * 60 * 60 * 24);
 		const diffInWeeks = Math.floor(diffInDays / 7);
@@ -123,12 +132,18 @@ export default function GoalDetail() {
 		datasets: [
 			{
 				data: [
-					(DataGoal || []).map((data) =>
-						parseInt(data.saved.replace(/\./g, ''), 10)
-					),
-					(DataGoal || []).map((data) =>
-						parseInt(data.amount.replace(/\./g, ''), 10)
-					),
+					(DataGoal || []).reduce((total, item) => {
+						const saved = item.saved
+							? parseInt(item.saved.replace(/\./g, ''), 10)
+							: 0;
+						return total + saved;
+					}, 0),
+					(DataGoal || []).reduce((total, item) => {
+						const amount = item.amount
+							? parseInt(item.amount.replace(/\./g, ''), 10)
+							: 0;
+						return total + amount;
+					}, 0),
 				],
 				backgroundColor: ['rgb(34,169,95)', 'rgb(240,240,240)'],
 			},
@@ -182,7 +197,7 @@ export default function GoalDetail() {
 											Estimated time to reach goal
 										</h1>
 										<h1 className="mt-5 font-medium text-gray-500">
-											{estimatedWeek} Week
+											{estimatedWeek[0]} Week
 										</h1>
 									</div>
 									<div className="mt-10">
@@ -206,7 +221,7 @@ export default function GoalDetail() {
 											<button
 												className="btn btn-sm px-5 bg-transparent text-black hover:bg-transparent border-none mt-5"
 												onClick={() => {
-													handleSetGoal();
+													handleSetGoal(id_goal);
 												}}
 											>
 												Set goal as reached
@@ -274,7 +289,7 @@ export default function GoalDetail() {
 							<button
 								className="btn btn-sm bg-green-700 hover:bg-green-800 border-none text-slate-100 px-5"
 								onClick={() => {
-									handleUpdateSaved(id_goal);
+									handleUpdateSaved();
 								}}
 							>
 								Submit
