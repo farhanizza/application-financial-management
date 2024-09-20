@@ -62,7 +62,7 @@ export default function Goal(props) {
 		const GetData = async () => {
 			try {
 				const response = await axios.get(
-					`http://localhost:3001/goal?id_user=${id}`
+					`http://localhost:3001/goal?id_user=${id}&isActive=0`
 				);
 
 				setGoalData(response.data);
@@ -108,8 +108,17 @@ export default function Goal(props) {
 						<h1 className="font-semibold text-slate-100">Active</h1>
 					</div>
 					<div className="mt-10 bg-gray-200 px-5 py-5 rounded-lg shadow-xl shadow-green-200 cursor-pointer">
-						{(GoalData || []).map((value, key) => (
-							<Link key={key} to={`/goal/detail/${value.id_user}/${value.id}`}>
+						{[
+							...new Map(
+								(GoalData || [])
+									.sort((a, b) => b.id - a.id)
+									.map((item) => [item['id_user'], item])
+							).values(),
+						].map((value, key) => (
+							<Link
+								key={key}
+								to={`/goal/detail/${value?.id_user}/${value?.id}`}
+							>
 								<div className="flex mb-5">
 									<div className="flex py-5 px-3 rounded-lg bg-green-500 mr-5">
 										<AccountBalanceWallet className="text-white" />
@@ -117,26 +126,26 @@ export default function Goal(props) {
 									<div className="flex w-full justify-between">
 										<div className="flex flex-col">
 											<h1 className="font-semibold text-black">
-												{value.goalname}
+												{value?.goalname}
 											</h1>
 											<h1 className="mt-3 font-medium text-gray-500">
-												{value.goaldate}
+												{value?.goaldate}
 											</h1>
 										</div>
 										<div className="flex flex-col">
 											<h1 className="font-semibold text-black">
-												Goal: Rp. {value.amount}
+												Goal: Rp. {value?.amount}
 											</h1>
 											<h1 className="mt-3 text-green-500 font-medium">
-												Saved: Rp. {value.saved}
+												Saved: Rp. {value?.saved}
 											</h1>
 										</div>
 									</div>
 								</div>
 								<progress
 									className="progress progress-success h-5"
-									value={parseInt(value.saved.replace(/\./g, ''), 10)}
-									max={parseInt(value.amount.replace(/\./g, ''), 10)}
+									value={parseInt(value?.saved?.replace(/\./g, ''), 10)}
+									max={parseInt(value?.amount?.replace(/\./g, ''), 10)}
 								></progress>
 							</Link>
 						))}
