@@ -38,7 +38,6 @@ import Navbar from '../parts/Navbar';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import '../assets/css/index.css';
-import useFetch from '../helpers/hooks/useFetch';
 
 ChartJS.register(
 	CategoryScale,
