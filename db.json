@@ -5,6 +5,12 @@
 			"email": "farhan@gmail.com",
 			"password": "$2a$10$Tp3uy8VTg8yBdNWwASZv5e6aUIqAmVc5vXaPe/4jKeYf3gAuzHBxe",
 			"id": 1
+		},
+		{
+			"username": "albert",
+			"email": "albert@gmail.com",
+			"password": "$2a$10$ZRL9W149CSCWYbaZIOSOLOI5ZeN7Ah3.aAaUHY0OI9CUkTeSO0KV2",
+			"id": 2
 		}
 	],
 	"users_balance": [
