@@ -75,10 +75,35 @@ export default function GoalDetail() {
 		GetData();
 	}, [id]);
 
-	const handleDelete = (id_goal) => {
-		axios.delete(`http://localhost:3001/goal?id=${id_goal}`).then(() => {
-			window.location.reload();
-		});
+	const handleDelete = async (id) => {
+		try {
+			const response = await axios.get('http://localhost:3001/goal');
+			const data = response.data;
+
+			// Filter data yang memiliki id_user yang sesuai
+
+			const goalsToDelete = data.filter((goal) => goal.id_user === id);
+
+			// Hapus setiap data yang ditemukan
+			for (const goal of goalsToDelete) {
+				// console.log(goal.id);
+				await axios.delete(`http://localhost:3001/goal/${goal.id}`);
+				navigate(`/home/${id}`);
+			}
+		} catch (error) {
+			if (error.response) {
+				// Server memberikan response
+				console.log('Error response data:', error.response.data);
+				console.log('Error response status:', error.response.status); // Mungkin ini 404
+				console.log('Error response headers:', error.response.headers);
+			} else if (error.request) {
+				// Request dibuat tetapi tidak ada response yang diterima
+				console.log('Error request:', error.request);
+			} else {
+				// Something happened in setting up the request
+				console.log('Error message:', error.message);
+			}
+		}
 	};
 
 	const handleUpdateSaved = async () => {
@@ -173,7 +198,7 @@ export default function GoalDetail() {
 									<button
 										className="btn btn-sm px-5 bg-red-700 hover:bg-red-800 text-white border-none"
 										onClick={() => {
-											handleDelete(id_goal);
+											handleDelete(id);
 										}}
 									>
 										Delete
