@@ -1,71 +1,71 @@
 {
-  "users": [
-    {
-      "username": "farhanizza",
-      "email": "farhan@gmail.com",
-      "password": "$2a$10$Tp3uy8VTg8yBdNWwASZv5e6aUIqAmVc5vXaPe/4jKeYf3gAuzHBxe",
-      "id": 1
-    }
-  ],
-  "users_balance": [
-    {
-      "id_user": "1",
-      "type": "Income",
-      "category": "Cash",
-      "amount": "50.000",
-      "date": "2024-08-30T07:36:12.943Z",
-      "id": 1
-    },
-    {
-      "id_user": "1",
-      "type": "Income",
-      "category": "Cash",
-      "amount": "450.000",
-      "date": "2024-08-30T07:36:28.785Z",
-      "id": 2
-    },
-    {
-      "id_user": "1",
-      "type": "Income",
-      "category": "Cash",
-      "amount": "100.000",
-      "date": "2024-08-30T07:53:29.791Z",
-      "id": 3
-    },
-    {
-      "id_user": "1",
-      "type": "Food",
-      "category": "Cash",
-      "amount": "100.000",
-      "date": "2024-09-02T07:55:28.324Z",
-      "id": 4
-    },
-    {
-      "id_user": "1",
-      "type": "Income",
-      "category": "Cash",
-      "amount": "500.000",
-      "date": "2024-09-04T07:06:41.881Z",
-      "id": 5
-    }
-  ],
-  "goal": [
-    {
-      "id_user": "1",
-      "goalname": "M3 Pro",
-      "amount": "32.000.000",
-      "saved": "10.000.000",
-      "goaldate": "2025-01-01",
-      "category": "Investment",
-      "note": "Test",
-      "isActive": 0,
-      "id": 1
-    },
-    {
-      "id_user": "1",
-      "saved": "100.000",
-      "isActive": 0,
-      "id": 2
-    }
-  ]
+	"users": [
+		{
+			"username": "farhanizza",
+			"email": "farhan@gmail.com",
+			"password": "$2a$10$Tp3uy8VTg8yBdNWwASZv5e6aUIqAmVc5vXaPe/4jKeYf3gAuzHBxe",
+			"id": 1
+		}
+	],
+	"users_balance": [
+		{
+			"id_user": "1",
+			"type": "Income",
+			"category": "Cash",
+			"amount": "50.000",
+			"date": "2024-08-30T07:36:12.943Z",
+			"id": 1
+		},
+		{
+			"id_user": "1",
+			"type": "Income",
+			"category": "Cash",
+			"amount": "450.000",
+			"date": "2024-08-30T07:36:28.785Z",
+			"id": 2
+		},
+		{
+			"id_user": "1",
+			"type": "Income",
+			"category": "Cash",
+			"amount": "100.000",
+			"date": "2024-08-30T07:53:29.791Z",
+			"id": 3
+		},
+		{
+			"id_user": "1",
+			"type": "Food",
+			"category": "Cash",
+			"amount": "100.000",
+			"date": "2024-09-02T07:55:28.324Z",
+			"id": 4
+		},
+		{
+			"id_user": "1",
+			"type": "Income",
+			"category": "Cash",
+			"amount": "500.000",
+			"date": "2024-09-04T07:06:41.881Z",
+			"id": 5
+		}
+	],
+	"goal": [
+		{
+			"id_user": "1",
+			"goalname": "M3 Pro",
+			"amount": "32.000.000",
+			"saved": "10.000.000",
+			"goaldate": "2025-01-01",
+			"category": "Investment",
+			"note": "Test",
+			"isActive": 0,
+			"id": 1
+		},
+		{
+			"id_user": "1",
+			"saved": "100.000",
+			"isActive": 0,
+			"id": 2
+		}
+	]
 }
