@@ -38,6 +38,7 @@ import Navbar from '../parts/Navbar';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import '../assets/css/index.css';
+import NoData from '../parts/NoData';
 
 ChartJS.register(
 	CategoryScale,
@@ -321,12 +322,18 @@ export default function Dashboard() {
 									{IDR(totalAmount)}
 								</h1>
 								<div className="mt-4">
-									<Doughnut
-										data={data}
-										width={200}
-										height={200}
-										options={{ maintainAspectRatio: false }}
-									/>
+									{data.datasets.length > 0 ? (
+										<Doughnut
+											data={data}
+											width={200}
+											height={200}
+											options={{ maintainAspectRatio: false }}
+										/>
+									) : (
+										<div className="flex justify-center items-center h-[11rem]">
+											<NoData />
+										</div>
+									)}
 								</div>
 							</div>
 						</div>
@@ -407,7 +414,9 @@ export default function Dashboard() {
 										</div>
 									))
 								) : (
-									<p>No records available.</p>
+									<div className="h-72 flex items-center justify-center">
+										<NoData />
+									</div>
 								)}
 							</div>
 						</div>

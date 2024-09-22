@@ -9,6 +9,7 @@ import IDR from '../helpers/CurrencyIDR';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import '../assets/css/index.css';
+import NoData from '../parts/NoData';
 
 export default function Statistics(props) {
 	const [dataUsers, setdataUsers] = useState('');
@@ -111,10 +112,10 @@ export default function Statistics(props) {
 											Average (Day)
 										</td>
 										<td className="py-2 text-green-500 font-semibold">
-											{IDR(125000)}
+											{IDR(0)}
 										</td>
 										<td className="py-2  text-red-500 font-semibold">
-											{IDR(52500)}
+											{IDR(0)}
 										</td>
 									</tr>
 									<tr>
@@ -173,25 +174,31 @@ export default function Statistics(props) {
 									</div>
 								</div>
 							</div>
-							{(dataAmount || [])
-								.filter((data) => data.type === 'Income')
-								.map((item, key) => (
-									<div className="mt-3" key={key}>
-										<div className="flex pr-5">
-											<div className="bg-green-700 flex items-center justify-center rounded-lg mr-5 w-10 px-5 py-5">
-												<AttachMoney className="text-white" />
-											</div>
-											<div className="flex items-center w-full justify-between">
-												<h1 className="font-semibold text-black">
-													{item.type}
-												</h1>
-												<h1 className="font-semibold text-slate-500">
-													{item.amount}
-												</h1>
+							{(dataAmount || []).length > 0 ? (
+								(dataAmount || [])
+									.filter((data) => data.type === 'Income')
+									.map((item, key) => (
+										<div className="mt-3" key={key}>
+											<div className="flex pr-5">
+												<div className="bg-green-700 flex items-center justify-center rounded-lg mr-5 w-10 px-5 py-5">
+													<AttachMoney className="text-white" />
+												</div>
+												<div className="flex items-center w-full justify-between">
+													<h1 className="font-semibold text-black">
+														{item.type}
+													</h1>
+													<h1 className="font-semibold text-slate-500">
+														{item.amount}
+													</h1>
+												</div>
 											</div>
 										</div>
-									</div>
-								))}
+									))
+							) : (
+								<div className="mt-3">
+									<NoData />
+								</div>
+							)}
 							<div className="mt-5">
 								<div className="w-full bg-green-800 px-5 py-2 rounded-lg">
 									<div className="flex justify-between">
@@ -202,25 +209,31 @@ export default function Statistics(props) {
 									</div>
 								</div>
 							</div>
-							{(dataAmount || [])
-								.filter((data) => data.type !== 'Income')
-								.map((item, key) => (
-									<div className="mt-3" key={key}>
-										<div className="flex pr-5">
-											<div className="bg-red-700 flex items-center justify-center rounded-lg mr-5 w-10 px-5 py-5">
-												<AccountBalanceWallet className="text-white" />
-											</div>
-											<div className="flex items-center w-full justify-between">
-												<h1 className="font-semibold text-black">
-													{item.type}
-												</h1>
-												<h1 className="font-semibold text-slate-500">
-													{item.amount}
-												</h1>
+							{(dataAmount || []).length > 0 ? (
+								(dataAmount || [])
+									.filter((data) => data.type !== 'Income')
+									.map((item, key) => (
+										<div className="mt-3" key={key}>
+											<div className="flex pr-5">
+												<div className="bg-red-700 flex items-center justify-center rounded-lg mr-5 w-10 px-5 py-5">
+													<AccountBalanceWallet className="text-white" />
+												</div>
+												<div className="flex items-center w-full justify-between">
+													<h1 className="font-semibold text-black">
+														{item.type}
+													</h1>
+													<h1 className="font-semibold text-slate-500">
+														{item.amount}
+													</h1>
+												</div>
 											</div>
 										</div>
-									</div>
-								))}
+									))
+							) : (
+								<div className="mt-3">
+									<NoData />
+								</div>
+							)}
 						</div>
 					</div>
 				</div>

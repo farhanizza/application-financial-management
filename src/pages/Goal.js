@@ -7,6 +7,7 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import useFetch from '../helpers/hooks/useFetch';
 import '../assets/css/index.css';
+import NoData from '../parts/NoData';
 
 export default function Goal(props) {
 	const categoryList = ['Saving to goal', 'Investment'];
@@ -108,47 +109,51 @@ export default function Goal(props) {
 						<h1 className="font-semibold text-slate-100">Active</h1>
 					</div>
 					<div className="mt-10 bg-gray-200 px-5 py-5 rounded-lg shadow-xl shadow-green-200 cursor-pointer">
-						{[
-							...new Map(
-								(GoalData || [])
-									.sort((a, b) => b.id - a.id)
-									.map((item) => [item['id_user'], item])
-							).values(),
-						].map((value, key) => (
-							<Link
-								key={key}
-								to={`/goal/detail/${value?.id_user}/${value?.id}`}
-							>
-								<div className="flex mb-5">
-									<div className="flex py-5 px-3 rounded-lg bg-green-500 mr-5">
-										<AccountBalanceWallet className="text-white" />
-									</div>
-									<div className="flex w-full justify-between">
-										<div className="flex flex-col">
-											<h1 className="font-semibold text-black">
-												{value?.goalname}
-											</h1>
-											<h1 className="mt-3 font-medium text-gray-500">
-												{value?.goaldate}
-											</h1>
+						{(GoalData || []).length > 0 ? (
+							[
+								...new Map(
+									(GoalData || [])
+										.sort((a, b) => b.id - a.id)
+										.map((item) => [item['id_user'], item])
+								).values(),
+							].map((value, key) => (
+								<Link
+									key={key}
+									to={`/goal/detail/${value?.id_user}/${value?.id}`}
+								>
+									<div className="flex mb-5">
+										<div className="flex py-5 px-3 rounded-lg bg-green-500 mr-5">
+											<AccountBalanceWallet className="text-white" />
 										</div>
-										<div className="flex flex-col">
-											<h1 className="font-semibold text-black">
-												Goal: Rp. {value?.amount}
-											</h1>
-											<h1 className="mt-3 text-green-500 font-medium">
-												Saved: Rp. {value?.saved}
-											</h1>
+										<div className="flex w-full justify-between">
+											<div className="flex flex-col">
+												<h1 className="font-semibold text-black">
+													{value?.goalname}
+												</h1>
+												<h1 className="mt-3 font-medium text-gray-500">
+													{value?.goaldate}
+												</h1>
+											</div>
+											<div className="flex flex-col">
+												<h1 className="font-semibold text-black">
+													Goal: Rp. {value?.amount}
+												</h1>
+												<h1 className="mt-3 text-green-500 font-medium">
+													Saved: Rp. {value?.saved}
+												</h1>
+											</div>
 										</div>
 									</div>
-								</div>
-								<progress
-									className="progress progress-success h-5"
-									value={parseInt(value?.saved?.replace(/\./g, ''), 10)}
-									max={parseInt(value?.amount?.replace(/\./g, ''), 10)}
-								></progress>
-							</Link>
-						))}
+									<progress
+										className="progress progress-success h-5"
+										value={parseInt(value?.saved?.replace(/\./g, ''), 10)}
+										max={parseInt(value?.amount?.replace(/\./g, ''), 10)}
+									></progress>
+								</Link>
+							))
+						) : (
+							<NoData />
+						)}
 					</div>
 				</div>
 			</div>
